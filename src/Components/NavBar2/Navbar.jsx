@@ -1,18 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -30,7 +27,6 @@ const Navbar = () => {
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
   const [explorAnchorEl, setExploreAnchorEl] = useState(null);
   const [avtarAnchorEl, setAvatarAnchorEl] = useState(null);
   const openExplore = Boolean(explorAnchorEl);
@@ -38,9 +34,7 @@ const Navbar = () => {
 
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  console.log("auth", isAuthenticated);
 
-  console.log("user", user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -56,11 +50,11 @@ const Navbar = () => {
 
   const menuItems = [
     { text: "Courses", link: "/courses" },
-    { text: "Cart", link: "/cart" }, // Fixed link for Cart
+    { text: "Cart", link: "/cart" },
   ];
 
   const handleLogout = () => {
-    dispatch(logout()); // Dispatch logout action
+    dispatch(logout());
   };
 
   const handleExploreClick = (event) => {
@@ -89,10 +83,7 @@ const Navbar = () => {
         sx={{
           backgroundColor: "white",
           boxShadow: 1,
-          borderBottom:
-            "linear-gradient(to right, rgb(105,241,243), rgb(81,209,109))",
-
-  
+          borderBottom: "linear-gradient(to right, rgb(105,241,243), rgb(81,209,109))",
         }}
       >
         <Toolbar
@@ -102,7 +93,6 @@ const Navbar = () => {
             alignItems: "center",
           }}
         >
-          {/* Display only Logo if on login or signup page */}
           {isAuthPage ? (
             <Box component={Link} to="/">
               <img
@@ -116,7 +106,6 @@ const Navbar = () => {
             </Box>
           ) : (
             <>
-              {/* Mobile View: Menu Icon, Logo, and Search Icon */}
               {isMobile ? (
                 <>
                   <IconButton
@@ -139,17 +128,10 @@ const Navbar = () => {
                       }}
                     />
                   </Box>
-                  <IconButton
-                    onClick={() => setShowSearch(!showSearch)}
-                    sx={{ color: "black" }}
-                  >
-                    <SearchIcon />
-                  </IconButton>
                 </>
               ) : (
                 <>
                   <Box display="flex" alignItems="center" gap={3}>
-                    {/* Logo */}
                     <Box
                       component={Link}
                       to="/"
@@ -165,7 +147,6 @@ const Navbar = () => {
                       />
                     </Box>
 
-                    {/* Explore Button with Dropdown */}
                     <Button
                       variant="outlined"
                       color="primary"
@@ -183,38 +164,14 @@ const Navbar = () => {
                       MenuListProps={{ "aria-labelledby": "basic-button" }}
                     >
                       <MenuItem
-                        onClick={()=>navigate("/courses")}
+                        onClick={() => navigate("/courses")}
                         sx={{ fontSize: 12 }}
                       >
                         Courses
                       </MenuItem>
                     </Menu>
-
-                    {/* Search Box - Visible in Tablet & Desktop Views */}
-                    {(isTablet || isDesktop) && (
-                      <TextField
-                        variant="outlined"
-                        size="small"
-                        placeholder="Search..."
-                        sx={{
-                          width: isTablet ? "250px" : "400px",
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: "24px", // Apply border-radius to the input field
-                          },
-                          fontSize: 9,
-                        }}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <SearchIcon />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    )}
                   </Box>
 
-                  {/* Navigation Items with Increased Gap */}
                   <Box
                     sx={{
                       display: "flex",
@@ -268,28 +225,16 @@ const Navbar = () => {
                         </Menu>
                       </>
                     ) : (
-                      <>
-                        <Button
-                          variant="contained"
-                          size="small"
-                          component={Link}
-                          to="/login"
-                          sx={{ bgcolor: "#4281FF", fontSize: 10 }}
-                        >
-                          Login
-                        </Button>
-                      </>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        component={Link}
+                        to="/login"
+                        sx={{ bgcolor: "#4281FF", fontSize: 10 }}
+                      >
+                        Login
+                      </Button>
                     )}
-
-                    {/* <Button
-                      variant="contained"
-                      size="small"
-                      component={Link}
-                      to="/signup"
-                      sx={{ bgcolor: "#3D3D3E", fontSize: 10, fontWeight: "bold" }}
-                    >
-                      Sign Up
-                    </Button> */}
                   </Box>
                 </>
               )}
@@ -301,31 +246,10 @@ const Navbar = () => {
       <Divider
         sx={{
           height: "2px",
-          background:
-            "linear-gradient(to right, rgb(105,241,243), rgb(81,209,109))",
+          background: "linear-gradient(to right, rgb(105,241,243), rgb(81,209,109))",
         }}
       />
 
-      {/* Search Bar for Mobile View (Visible when Search Icon is Clicked) */}
-      {isMobile && showSearch && (
-        <Box sx={{ display: "flex", justifyContent: "center", p: 1 }}>
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Search..."
-            sx={{ width: "90%" }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Box>
-      )}
-
-      {/* Drawer for Mobile Menu */}
       <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
         <List>
           {menuItems.map((item) => (
@@ -347,14 +271,6 @@ const Navbar = () => {
             onClick={toggleDrawer(false)}
           >
             <ListItemText primary="Login" />
-          </ListItem>
-          <ListItem
-            button
-            component={Link}
-            to="/signup"
-            onClick={toggleDrawer(false)}
-          >
-            <ListItemText primary="Sign Up" />
           </ListItem>
         </List>
       </Drawer>

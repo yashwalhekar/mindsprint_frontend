@@ -10,6 +10,7 @@ import AddUser from "../Admin/Components/User/AddUser";
 import Modules from "../Admin/Components/courses/Modules";
 import CreateLessons from "../Admin/Components/courses/CreateLessons";
 import Lessons from "../Admin/Components/courses/Lessons";
+import Notes from "../Admin/Components/courses/Notes";
 
 
 const AdminRouter = () => {
@@ -24,6 +25,8 @@ const AdminRouter = () => {
         <Route path="courses/:course_id/modules" element={<Modules/>} />
         
         <Route path="courses/:course_id/modules/:module_id/lectures" element={<Lessons/>} />
+
+        <Route path="courses/:course_id/modules/:module_id/lectures/:lesson_id/add-notes" element={<Notes/>} />
       </Route>
     </Routes>
   );

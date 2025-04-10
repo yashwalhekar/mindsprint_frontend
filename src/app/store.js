@@ -8,6 +8,7 @@ import adminReducer from "../Admin/features/adminSlice";
 import adminApi  from "../Admin/features/adminApi";
 import courseReducer from "../Pages/Courses/feature/courseSlice";
 import { courseApi } from "../Pages/Courses/feature/courseApi";
+import { enrollmentApi } from "../Pages/Enrollment/feature/enrollmentApi";
 
 // ✅ Create a single persist config for the whole root reducer
 const persistConfig = {
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   [authApi.reducerPath]: authApi.reducer,
   [adminApi.reducerPath]: adminApi.reducer,
   [courseApi.reducerPath]: courseApi.reducer,
+  [enrollmentApi.reducerPath]: enrollmentApi.reducer
 });
 
 // ✅ Apply persistReducer to the root reducer (not individual ones)
@@ -35,7 +37,9 @@ export const store = configureStore({
     getDefaultMiddleware({ serializableCheck: false }).concat(
       authApi.middleware,
       adminApi.middleware,
-      courseApi.middleware
+      courseApi.middleware,
+      enrollmentApi.middleware
+      
     ),
   devTools: process.env.NODE_ENV !== "production", // ✅ Enable Redux DevTools
 });

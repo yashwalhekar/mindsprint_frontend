@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box } from "@mui/material";
 import img from "../../Assets/images/mind_logo.png";
-import Footer from "../Home/Footer";
+import Footer from "../../Components/Footer";
 import LoginForm from "./LoginForm";
 import SignUpForm from "./SignUpForm";
 

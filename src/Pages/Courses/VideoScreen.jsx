@@ -9,6 +9,8 @@ import {
   Drawer,
   Toolbar,
   Divider,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -16,103 +18,106 @@ import Modules from "../../Components/Courses/Modules";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-const drawerWidth = 320; // Sidebar width
-const bottomNavHeight = 64; // Bottom navigation height
-const navbarHeight = 67; // Adjust this to match your Navbar height
+import AdminNotes from "../../Components/Courses/Notes/AdminNotes";
+import UserNote from "../../Components/Courses/Notes/UserNote";
+
+const drawerWidth = 320;
+const bottomNavHeight = 64;
+const navbarHeight = 67;
 
 const VideoScreen = () => {
   const location = useLocation();
   const [videoUrl, setVideoUrl] = useState(location.state?.video_url || "");
   const [title, setTitle] = useState(location.state?.title || "Course Video");
   const [value, setValue] = useState(0);
-  const navigate = useNavigate()
+  const [notesTab, setNotesTab] = useState(0);
+  const [modulesId,setModuleId] = useState(null)
+  const [lessonsId,setLessonId] = useState(null)
+  const navigate = useNavigate();
 
-  
-    const isLoggedin = useSelector((state) => state.auth.isAuthenticated);
-  console.log("islog",isLoggedin);
-  
+  const isLoggedin = useSelector((state) => state.auth.isAuthenticated);
 
-  // Redirect to login if not logged in
   useEffect(() => {
     if (!isLoggedin) {
       alert("You must be logged in to view this content.");
-      navigate("/login");  // Redirect to login page
+      navigate("/login");
     }
   }, [isLoggedin, navigate]);
 
-  // Function to update video URL and title
-  const handlePlayVideo = (url, title) => {
+  const handlePlayVideo = (url, title,moduleId,lessonId) => {
     setVideoUrl(url);
     setTitle(title);
+    setModuleId(moduleId);
+    setLessonId(lessonId)
   };
+
+  console.log("Module Id",modulesId)
+  console.log("lessons id",lessonsId)
 
   return (
     <Box display="flex" minHeight="100vh">
-      {/* Left Sidebar for Modules - Below Navbar */}
+      {/* Left Sidebar */}
       <Drawer
         variant="permanent"
         anchor="left"
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          mt: `${navbarHeight}px`, // Pushes sidebar below navbar
+          mt: `${navbarHeight}px`,
           "& .MuiDrawer-paper": {
             width: drawerWidth,
-            mt: `${navbarHeight}px`, // Ensures sidebar starts below navbar
+            mt: `${navbarHeight}px`,
             boxSizing: "border-box",
           },
         }}
       >
-        <Toolbar /> {/* Placeholder to match navbar height */}
+        <Toolbar />
         <Box p={2} overflow="auto">
           <Typography variant="h6" gutterBottom textAlign="center">
             Modules
           </Typography>
-          <Divider></Divider>
-     
-            <Modules onPlayVideo={handlePlayVideo} />
-         
+          <Divider />
+          <Modules onPlayVideo={handlePlayVideo} />
         </Box>
       </Drawer>
 
       {/* Main Content */}
       <Box flexGrow={1} display="flex" flexDirection="column">
-        {/* Video Player Section */}
-        <Box flexGrow={1} display="flex" flexDirection="column" f>
+        {/* Video Player */}
+        <Box flexGrow={1} display="flex" flexDirection="column">
           <VideoPlayer video_url={videoUrl} title={title} />
 
-          {/* Bottom Navigation Bar - Directly below Video Player */}
-          <Paper
-            sx={{
-              position: "relative", // No fixed position, so it sits naturally below the video
-              width: "100%",
-              mt: 2, // Adds spacing between video player and bottom navigation
-            }}
-            elevation={3}
-          >
+          {/* Bottom Navigation */}
+          <Paper sx={{ position: "relative", width: "100%", mt: 2 }} elevation={3}>
             <BottomNavigation
               showLabels
               value={value}
               onChange={(event, newValue) => setValue(newValue)}
             >
-              <BottomNavigationAction
-                label="Course Content"
-                icon={<LibraryBooksIcon />}
-              />
-              <BottomNavigationAction
-                label="Notes"
-                icon={<DescriptionIcon />}
-              />
+              <BottomNavigationAction label="Course Content" icon={<LibraryBooksIcon />} />
+              <BottomNavigationAction label="Notes" icon={<DescriptionIcon />} />
             </BottomNavigation>
           </Paper>
         </Box>
 
         {/* Render Content Below Navigation Based on Selection */}
         <Box p={3}>
-          {value === 0 && (
-            <Typography variant="h6">📚 Course Content</Typography>
+          {value === 0 && <Typography variant="h6">📚 Course Content</Typography>}
+          {value === 1 && (
+            <Box>
+              {/* Notes Navbar */}
+              <Tabs value={notesTab} onChange={(e, newValue) => setNotesTab(newValue)}>
+                <Tab label="User Notes" />
+                <Tab label="Admin Notes" />
+              </Tabs>
+
+              {/* Notes Sections */}
+              <Box mt={3}>
+                {notesTab === 0 && <UserNote moduleId={modulesId} lessonId={lessonsId} />} {/* User Notes Section */}
+                {notesTab === 1 && <AdminNotes moduleId={modulesId} lessonId={lessonsId} />} {/* Admin Notes Section */}
+              </Box>
+            </Box>
           )}
-          {value === 1 && <Typography variant="h6">📝 Notes</Typography>}
         </Box>
       </Box>
     </Box>

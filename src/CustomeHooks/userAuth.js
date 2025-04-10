@@ -5,7 +5,7 @@ const useAuth = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const storedUser = JSON.parse(localStorage.getItem("user")); // Assuming user data is stored
+    const storedUser = JSON.parse(localStorage.getItem("user"));
     if (token && storedUser) {
       setUser(storedUser);
     }

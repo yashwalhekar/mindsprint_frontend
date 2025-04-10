@@ -9,11 +9,14 @@ import {
   Link,
   InputAdornment,
   IconButton,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import { useRegisterUserMutation } from "./feature/authApi";
 import { setUser } from "./feature/authSlice";
+import { validationForm } from "../../utils/validationForm";
 
 const SignUpForm = ({ toggleView }) => {
   const [formData, setFormData] = useState({
@@ -29,10 +32,14 @@ const SignUpForm = ({ toggleView }) => {
     country: "",
     school: "",
   });
+  const [errors, setErrors] = useState({});
 
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const [registerUser, { isLoading, error }] = useRegisterUserMutation();  
+  const[openSnackbar,setOpenSnackbar] =useState(false)
+  const[snackbarMessage,setSnackbarMessage] = useState("");
+  const[snackbarSeverity,setSnackbarSeverity] = useState("success")
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -40,9 +47,19 @@ const SignUpForm = ({ toggleView }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const validationErrors = validationForm(formData)
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     try {
       const response = await registerUser(formData).unwrap();
       dispatch(setUser({ user: formData, token: response.token }));
+
+      setSnackbarMessage("Register user successfully...")
+      setSnackbarSeverity("success");
+      setOpenSnackbar(true)
       setFormData({ first_name: "",
         last_name: "",
         dob: "",
@@ -56,6 +73,9 @@ const SignUpForm = ({ toggleView }) => {
         school: "",});
     } catch (err) {
       console.error("Registration failed", err);
+      setSnackbarMessage("Something went wrong,user registration failed")
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true)
     }
   };
 
@@ -70,11 +90,14 @@ const SignUpForm = ({ toggleView }) => {
           mt:{xs:5},
           p: { xs: 1, sm: 6, md: 4 },
           borderRadius: { xs: 2, sm: 4, md: 8 },
-          boxShadow: 3,
+          boxShadow: 4,
           textAlign: "center",
           "@media (max-width:600px)": { maxWidth: "90%" },
         }}
       >
+        <Box my={2}>
+          <Typography variant="title" fontSize="25px" fontWeight="bold" fontFamily="jomolhari" >Registration form</Typography>
+        </Box>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <TextField
@@ -86,6 +109,8 @@ const SignUpForm = ({ toggleView }) => {
               margin="normal"
               size="small"
               onChange={handleChange}
+              error={!!errors.first_name}
+              helperText={errors.first_name}
               required
             />
           </Grid>
@@ -99,6 +124,8 @@ const SignUpForm = ({ toggleView }) => {
               margin="normal"
               size="small"
               onChange={handleChange}
+              error={!!errors.last_name}
+              helperText={errors.last_name}
               required
             />
           </Grid>
@@ -113,6 +140,8 @@ const SignUpForm = ({ toggleView }) => {
               margin="normal"
               size="small"
               onChange={handleChange}
+              error={!!errors.dob}
+              helperText={errors.dob}
               required
               InputLabelProps={{ shrink: true }}
             />
@@ -194,6 +223,8 @@ const SignUpForm = ({ toggleView }) => {
               margin="normal"
               size="small"
               onChange={handleChange}
+              error = {!!errors.phone}
+              helperText = {errors.phone}
               required
             />
           </Grid>
@@ -208,6 +239,8 @@ const SignUpForm = ({ toggleView }) => {
               margin="normal"
               size="small"
               onChange={handleChange}
+              error={!!errors.email}
+              helperText={errors.email}
               required
             />
           </Grid>
@@ -222,6 +255,8 @@ const SignUpForm = ({ toggleView }) => {
               margin="normal"
               size="small"
               onChange={handleChange}
+              error = {!!errors.password}
+              helperText={errors.password}
               required
               InputProps={{
                 endAdornment: (
@@ -258,6 +293,21 @@ const SignUpForm = ({ toggleView }) => {
           </Link>
         </Typography>
       </Box>
+      <Snackbar
+      open={openSnackbar}
+      autoHideDuration={3000}
+      onClose={()=>setOpenSnackbar(false)}
+      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+        onClose={()=>setOpenSnackbar(false)}
+        severity={snackbarSeverity}
+        variant="filled"
+         >
+        {snackbarMessage}
+        </Alert>
+        
+      </Snackbar>
 
       {error && <p>Error: {error.data?.message || "Something went wrong"}</p>}
     </>

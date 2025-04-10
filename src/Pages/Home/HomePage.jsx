@@ -1,14 +1,13 @@
 import React from "react";
-import HomeCarousel from "./HomeCarousel";
-import { Box, Button, Grid, Stack, Typography } from "@mui/material";
+import HomeCarousel from "../../Components/HomeCarousel";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import AdsClickIcon from "@mui/icons-material/AdsClick";
 import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
 import img3 from "../../Assets/images/img5.jpg";
-import Footer from "./Footer";
+import Footer from "../../Components/Footer";
 
 const HomePage = () => {
-  // Define your data array
   const dummyData = [
     {
       icon: <AdsClickIcon sx={{ color: "red" }} />,
@@ -33,40 +32,37 @@ const HomePage = () => {
         <HomeCarousel />
       </Box>
 
-      <Box p={1}>
+      <Box p={3}>
         <Typography
           variant="h6"
           fontSize={20}
-          sx={{ textAlign: "center",bgcolor:"#9275B3",color:"white" }}
-          mt={4}
-          mb={2}
+          sx={{ textAlign: "center",bgcolor:"#9275B3",color:"white",p:1,borderRadius:2}}
           fontWeight={"semi-bold"}
-          fontFamily={"brawler"}
+          fontFamily={"jomolhari"}
         >
           "A healthy mind builds a happy future. Let’s nurture their mental
           well-being today!
         </Typography>
       </Box>
 
-      <Box mt={4} sx={{backgroundImage:"linear-gradient(to right, #F2FFFF, #AFE5E5)",borderTopLeftRadius:"26px",borderTopRightRadius:"26px"}} p={4}>
+      <Box mt={4} p={2} sx={{backgroundImage:"linear-gradient(to right,rgb(217, 238, 238), #AFE5E5)",borderTopLeftRadius:"26px",borderTopRightRadius:"26px",} }>
         <Typography
           variant="h5"
           fontWeight="bold"
           mb={4}
           sx={{ display: "flex", justifyContent: "center",}}
-          fontFamily={"brawler"}
+          fontFamily={"jomolhari"}
         >
           Invest in Your Growth
         </Typography>
 
         <Grid container spacing={4}>
-          {/* Map over the dummyData array */}
           {dummyData.map((data, index) => (
             <Grid
               item
               xs={12}
               md={4}
-              key={index} // Key should be added when using map
+              key={index}
               sx={{
                 display: "flex",
                 flexDirection: "column",
@@ -77,18 +73,16 @@ const HomePage = () => {
               <div style={{ fontSize: "60px", marginBottom: "10px" }}>
                 {data.icon}
               </div>
-
               {/* Use the heading from the data */}
               <Typography
                 variant="h6"
                 fontSize={20}
                 fontWeight="bold"
                 sx={{ textAlign: "center", marginBottom: "8px" }}
-                fontFamily={"brawler"}
+                fontFamily={"jomolhari"}
               >
                 {data.heading}
               </Typography>
-
               {/* Use the content from the data */}
               <Typography
                 variant="subtitle1"
@@ -105,10 +99,10 @@ const HomePage = () => {
       <Box mt={3} p={2}>
         <Box
           display="flex"
-          flexDirection={{ xs: "column", md: "row" }} // Column layout on small screens and row layout on larger screens
+          flexDirection={{ xs: "column", md: "row" }} 
           justifyContent="space-between"
           alignItems="center"
-          sx={{  backgroundImage:"linear-gradient(to bottom, #F2FFFF, #AFE5E5)",borderTopLeftRadius:"26px",borderTopRightRadius:"26px"}}
+          sx={{  backgroundImage:"linear-gradient(to bottom,rgb(217, 243, 243), #AFE5E5)",borderTopLeftRadius:"26px",borderTopRightRadius:"26px"}}
           width={"100%"}
         >
           <Box
@@ -117,7 +111,6 @@ const HomePage = () => {
               flexDirection: "column",
               justifyContent: "center",
               width: { xs: "80%", md: "50%" },
-            
             }}
           >
             <Typography
@@ -126,7 +119,7 @@ const HomePage = () => {
                 ml: 4,
                 fontSize: 20,
                 fontWeight: "bold",
-                fontStyle: "brawler",
+                fontFamily:"jomolhari"
               }}
               textAlign="center"
             >

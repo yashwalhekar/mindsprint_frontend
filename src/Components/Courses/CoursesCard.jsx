@@ -5,35 +5,30 @@ import {
   CardMedia,
   Button,
   Typography,
-  Modal,
-  Box,
 } from "@mui/material";
-import { useEnrollUserMutation } from "../Enrollment/feature/enrollmentApi";
-import { useSelector } from "react-redux";
-const CourseCard = ({ course,onClick,onEnroll,isEnrolled }) => {
+const CourseCard = ({ course,onClick}) => {
   return (
     <>
       {/* Course Card */}
       <Card
         sx={{
-          width:280,
-          height:350,
+          width:230,
+          height:320,
           boxShadow: 3,
           transition: "transform 0.3s, box-shadow 0.3s",
           "&:hover": { transform: "scale(1.05)", boxShadow: 6 },
+          borderRadius:"18px"
         }}
-        onClick={onClick}
+        
       >
-        {/* Clickable Image to Open Video Modal */}
         <CardMedia
           component="img"
           height="140"
           image={course.image_url}
           alt={course.title}
-          sx={{ cursor: "pointer" }} // Makes it clickable
+          sx={{ cursor: "pointer",objectFit: "cover", }}
         />
-
-        <CardContent>
+        <CardContent sx={{flexGrow:1}}>
           <Typography
             variant="h7"
             sx={{
@@ -57,8 +52,8 @@ const CourseCard = ({ course,onClick,onEnroll,isEnrolled }) => {
         </CardContent>
 
         <CardActions>
-          <Button size="small" variant="contained" sx={{mt:3}} color="primary" fullWidth onClick={()=>onEnroll(course.course_id)}>
-           {isEnrolled? "Enrolled":"Enroll Now"}
+          <Button size="small" variant="contained" sx={{mt:1}} color="primary" fullWidth onClick={onClick}>
+           View Details
           </Button>
         </CardActions>
       </Card>

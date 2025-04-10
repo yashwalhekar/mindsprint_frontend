@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Add carousel styles
-import img1 from "../../Assets/images/FisrtImage.jpg";
-import img2 from "../../Assets/images/SecondImg.jpg";
-import img3 from "../../Assets/images/thirdimg.jpg";
+import img1 from "../../src/Assets/images/FisrtImage.jpg"
+import img2 from "../../src/Assets/images/SecondImg.jpg";
+import img3 from "../../src/Assets/images/thirdimg.jpg";
 
 const HomeCarousel = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth); // Track window width
@@ -32,6 +32,7 @@ const HomeCarousel = () => {
       transitionTime={300} // Transition time
       // renderArrowPrev={() => null} // Disable previous button
       // renderArrowNext={() => null} // Disable next button
+      showStatus={false}
     >
       <div>
         <img
@@ -40,8 +41,8 @@ const HomeCarousel = () => {
           style={{
             objectFit: "cover",
             height: isMobile ? "250px" : "600px", // Adjust height for mobile
-            width: "100%",
-            borderRadius: "15px",
+            width: "98%",
+            borderRadius: "20px",
           }}
         />
       </div>
@@ -52,7 +53,8 @@ const HomeCarousel = () => {
           style={{
             objectFit: "cover",
             height: isMobile ? "250px" : "600px", // Adjust height for mobile
-            width: "100%",
+            width: "98%",
+            borderRadius: "20px",
           }}
         />
       </div>
@@ -63,7 +65,8 @@ const HomeCarousel = () => {
           style={{
             objectFit: "cover",
             height: isMobile ? "250px" : "600px", // Adjust height for mobile
-            width: "100%",
+            width: "98%",
+            borderRadius: "20px",
           }}
         />
       </div>

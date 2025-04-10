@@ -44,8 +44,10 @@ const ViewUsers = () => {
 
   const handleEnroll = async (user) => {
     const newStatus = user.status === "Active" ? "Inactive" : "Active";
+    console.log("user");
+    
     try {
-      await updateUserStatus({ id: user.id, status: newStatus }).unwrap();
+      await updateUserStatus({ user_id: user.user_id, status: newStatus }).unwrap();
       console.log("User status updated successfully");
     } catch (error) {
       console.error("Failed to update user status:", error);
@@ -129,9 +131,9 @@ const ViewUsers = () => {
           <TableBody>
             {users
               .slice(page * rowsPerPages, page * rowsPerPages + rowsPerPages)
-              .map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.id}</TableCell>
+              .map((user,index) => (
+                <TableRow key={index}>
+                  <TableCell>{index + 1}</TableCell>
                   <TableCell>{user.user_id}</TableCell>
                   <TableCell>
                     {user.first_name} {user.last_name}

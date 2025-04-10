@@ -6,6 +6,7 @@ const initialState = {
   courses: [],
   modules: [], // Add modules state here
   lessons: [],
+  notes:[],
   loading: false,
   error: null,
 };
@@ -95,6 +96,15 @@ const adminSlice = createSlice({
         (lesson) => lesson.lesson_id !== lesson_id
       );
     },
+
+    //----------------Notes--------------------------------
+
+    createNotes: (state, action) => {
+      if (!state.notes) {
+        state.notes = []; // Ensure state.notes is always an array
+      }
+      state.notes.push(action.payload);
+    },
   },
 });
 
@@ -111,5 +121,6 @@ export const {
   setLessons,
   createLesson,
   removeLesson,
+  createNotes
 } = adminSlice.actions;
 export default adminSlice.reducer;
