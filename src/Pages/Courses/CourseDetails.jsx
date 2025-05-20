@@ -2,6 +2,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Alert,
   Box,
   Button,
   Card,
@@ -9,6 +10,7 @@ import {
   CardContent,
   CardMedia,
   Paper,
+  Snackbar,
   Typography,
   useMediaQuery,
   useTheme,
@@ -19,21 +21,26 @@ import { useGetLessonsQuery, useGetModulesQuery } from "./feature/courseApi";
 import { useSelector } from "react-redux";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Footer from "../../Components/Footer";
-import { useEnrollUserMutation, useGetEnrollmentInfoApiQuery } from "../Enrollment/feature/enrollmentApi";
+import {
+  useEnrollUserMutation,
+  useGetEnrollmentInfoApiQuery,
+} from "../Enrollment/feature/enrollmentApi";
 
 function CourseDetails() {
   const location = useLocation();
   const { course } = location.state || {};
   const navigate = useNavigate();
   const { course_id } = useParams();
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
-  const [enrollUser, { isLoading: isEnrolling}] = useEnrollUserMutation();
-  
+  const [enrollUser, { isLoading: isEnrolling }] = useEnrollUserMutation();
+
   const loggedUser = useSelector((state) => state.auth.user) || {};
   console.log("logged User", loggedUser);
   const userStatus = loggedUser?.status; //Fetch user status
@@ -41,33 +48,36 @@ function CourseDetails() {
 
   const [enrolledCourses, setEnrolledCourses] = useState(new Set());
 
-  const { data: enrollInfo, isLoading, isError, error } = useGetEnrollmentInfoApiQuery();
+  const {
+    data: enrollInfo,
+    isLoading,
+    isError,
+    error,
+  } = useGetEnrollmentInfoApiQuery();
 
-console.log("enrollInfo", enrollInfo);
-useEffect(() => {
-  if (enrollInfo && Array.isArray(enrollInfo)) {
-    const enrolled = enrollInfo.some(
-      (entry) =>
-        entry.user_id === loggedUser?.user_id &&
-        entry.course_id === course?.course_id
-    );
-    if (enrolled) {
-      setEnrolledCourses((prev) => new Set(prev).add(course.course_id));
+  console.log("enrollInfo", enrollInfo);
+  useEffect(() => {
+    if (enrollInfo && Array.isArray(enrollInfo)) {
+      const enrolled = enrollInfo.some(
+        (entry) =>
+          entry.user_id === loggedUser?.user_id &&
+          entry.course_id === course?.course_id
+      );
+      if (enrolled) {
+        setEnrolledCourses((prev) => new Set(prev).add(course.course_id));
+      }
     }
-  }
-}, [enrollInfo, loggedUser?.user_id, course?.course_id]);
-
-
+  }, [enrollInfo, loggedUser?.user_id, course?.course_id]);
 
   const handleEnroll = async (courseId) => {
     if (!loggedUser || !loggedUser.user_id) {
-      alert("Log in First");
-      navigate("/login");
+      setSnackbarMessage("You have to log in first");
+      setSnackbarSeverity("error");
+      console.log("Opening snackbar");
+      setOpenSnackbar(true);
+      // navigate("/login");
       return;
     }
-
-    
-    
 
     try {
       const response = await enrollUser({
@@ -92,22 +102,27 @@ useEffect(() => {
     ? filteredModules[0].module_id
     : null;
 
-  const {
-    data: lessons,
-  } = useGetLessonsQuery({ course_id, module_id }) || {};
+  const { data: lessons } = useGetLessonsQuery({ course_id, module_id }) || {};
 
   const isLoggedin = useSelector((state) => state.auth.isAuthenticated);
   console.log("login", isLoggedin);
 
   const handleWatchNow = () => {
     if (!isLoggedin) {
-      alert("You must be logged in to watch this course.");
-      navigate("/login");
+      setSnackbarMessage("You must be logged in to watch this course.");
+      setSnackbarSeverity("error");
+      console.log("Opening snackbar");
+      setOpenSnackbar(true);
+      // navigate("/login");
       return;
     }
 
     if (userStatus !== "Active") {
-      alert("Your account is not active. You cannot watch this course.");
+      setSnackbarMessage(
+        "Your account is not active. You cannot watch this course."
+      );
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
       return;
     }
 
@@ -138,7 +153,7 @@ useEffect(() => {
             alt="img"
             width="220"
             height="200"
-            style={{ borderRadius: "5px", objectFit: "cover",marginLeft:30}}
+            style={{ borderRadius: "5px", objectFit: "cover", marginLeft: 30 }}
           />
           <Box
             display="flex"
@@ -152,7 +167,7 @@ useEffect(() => {
               fontSize="24px"
               fontWeight="bold"
               fontFamily="jomolhari"
-              textAlign={isMobile?"center":"start"}
+              textAlign={isMobile ? "center" : "start"}
             >
               {course.title}
             </Typography>
@@ -164,8 +179,7 @@ useEffect(() => {
                 my: 2,
                 fontWeight: "bold",
               }}
-              textAlign={isMobile?"center":"start"}
-              
+              textAlign={isMobile ? "center" : "start"}
             >
               {course.creator}
             </Typography>
@@ -173,8 +187,8 @@ useEffect(() => {
               variant="subtitled"
               fontSize="17px"
               fontFamily="jomolhari"
-              sx={{ maxWidth:isMobile ? "100%":"67%"}}
-              textAlign={isMobile?"center":"start"}
+              sx={{ maxWidth: isMobile ? "100%" : "67%" }}
+              textAlign={isMobile ? "center" : "start"}
             >
               {course.description}
             </Typography>
@@ -183,13 +197,24 @@ useEffect(() => {
                 variant="contained"
                 size="small"
                 color="primary"
-                sx={{ mt: 2, width: "fit-content",display:"flex", alignItems:"center" ,mx:"auto"}}
-                onClick={enrolledCourses.has(course.course_id) ? handleWatchNow : handleBoth}
-
-
+                sx={{
+                  mt: 2,
+                  width: "fit-content",
+                  display: "flex",
+                  alignItems: "center",
+                  mx: "auto",
+                }}
+                onClick={
+                  enrolledCourses.has(course.course_id)
+                    ? handleWatchNow
+                    : handleBoth
+                }
               >
-                {isEnrolling ? "...Loading" : enrolledCourses.has(course.course_id) ? "Watch Now" : "Enroll Now"}
-
+                {isEnrolling
+                  ? "...Loading"
+                  : enrolledCourses.has(course.course_id)
+                  ? "Watch Now"
+                  : "Enroll Now"}
               </Button>
             )}
           </Box>
@@ -198,17 +223,17 @@ useEffect(() => {
           <Box
             sx={{
               position: "absolute",
-              right: isTablet?"10px":"40px", // Moves part of the card outside the box
+              right: isTablet ? "10px" : "40px", 
               top: "100%",
               transform: "translateY(-50%)",
-              zIndex: 1, // Ensures it appears above other elements
+              zIndex: 1, 
             }}
           >
             <Box>
               <Card
                 sx={{
-                  width:isTablet?190:300,
-                  height:isTablet?240: 350,
+                  width: isTablet ? 190 : 300,
+                  height: isTablet ? 240 : 350,
                   boxShadow: 3,
                   display: "flex",
                   flexDirection: "column",
@@ -220,10 +245,10 @@ useEffect(() => {
                 {/* Clickable Image to Open Video Modal */}
                 <CardMedia
                   component="img"
-                  height={isTablet?"150":"170"}
+                  height={isTablet ? "150" : "170"}
                   image={course.image_url}
                   alt={course.title}
-                  sx={{ cursor: "pointer" }} // Makes it clickable
+                  sx={{ cursor: "pointer" }} 
                 />
 
                 <CardContent sx={{ textAlign: "center" }}>
@@ -232,7 +257,7 @@ useEffect(() => {
                     sx={{
                       fontWeight: "bold",
                       fontFamily: "jomolhari",
-                      fontSize: isTablet?"20px":"25px",
+                      fontSize: isTablet ? "20px" : "25px",
                     }}
                   >
                     {course.title}
@@ -242,23 +267,29 @@ useEffect(() => {
                     sx={{
                       fontWeight: "bold",
                       fontFamily: "jomolhari",
-                      fontSize: isTablet?"15px":"18px",
+                      fontSize: isTablet ? "15px" : "18px",
                     }}
                   >
                     {course.creator}
                   </Typography>
                 </CardContent>
-                <CardActions sx={{mt:isTablet? 0: 3 }}>
+                <CardActions sx={{ mt: isTablet ? 0 : 3 }}>
                   <Button
                     size="small"
                     variant="contained"
                     color="primary"
                     fullWidth
-                    onClick={enrolledCourses.has(course.course_id) ? handleWatchNow : handleBoth}
-
-                  >
-                    {isEnrolling ? "Loading..." : enrolledCourses.has(course.course_id) ? "Watch Now" : "Enroll Now"
+                    onClick={
+                      enrolledCourses.has(course.course_id)
+                        ? handleWatchNow
+                        : handleBoth
                     }
+                  >
+                    {isEnrolling
+                      ? "Loading..."
+                      : enrolledCourses.has(course.course_id)
+                      ? "Watch Now"
+                      : "Enroll Now"}
                   </Button>
                 </CardActions>
               </Card>
@@ -266,6 +297,20 @@ useEffect(() => {
           </Box>
         )}
       </Box>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity={snackbarSeverity}
+          variant="filled"
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
 
       {/* course details section */}
       <Box p={3}>
@@ -274,7 +319,7 @@ useEffect(() => {
           sx={{
             background:
               "linear-gradient(90deg, rgba(71, 104, 222), rgba(90, 138, 227, 0.8))",
-            maxWidth:isMobile?"100%": "70%",
+            maxWidth: isMobile ? "100%" : "70%",
             p: 2,
             borderTopRightRadius: "5px",
             borderBottomRightRadius: "5px",
@@ -285,7 +330,7 @@ useEffect(() => {
           What you'll Learn
         </Typography>
 
-        <Box component={Paper} maxWidth={isMobile?"100%":"70%"} p={2}>
+        <Box component={Paper} maxWidth={isMobile ? "100%" : "70%"} p={2}>
           <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
             In this course, you will learn:
           </Typography>
@@ -304,6 +349,7 @@ useEffect(() => {
           </ul>
         </Box>
       </Box>
+
 
       <Box p={3} maxWidth="90%" component={Paper}>
         <Typography
@@ -355,6 +401,8 @@ useEffect(() => {
           <Typography>No Modules Available..</Typography>
         )}
       </Box>
+
+
       <Footer />
     </>
   );

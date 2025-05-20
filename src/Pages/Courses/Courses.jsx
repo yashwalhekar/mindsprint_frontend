@@ -16,11 +16,12 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-import CoursesCard from "../../Components/Courses/CoursesCard"
+import CoursesCard from "../../Components/Courses/CoursesCard";
 import { useGetCourseQuery } from "./feature/courseApi";
 import { setCourse } from "./feature/courseSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import Footer from "../../Components/Footer";
 
 const filters = {
   category: ["Web Development", "Data Science", "UI/UX Design"],
@@ -50,7 +51,6 @@ const Courses = () => {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // Handle filter change
   const handleFilterChange = (filterType, value) => {
     setSelectedFilters((prevFilters) => {
       const updatedFilter = { ...prevFilters };
@@ -66,7 +66,6 @@ const Courses = () => {
     });
   };
 
-  // Filter courses based on selected filters
   const getFilteredCourses = () => {
     if (
       !selectedFilters.category.length &&
@@ -100,7 +99,7 @@ const Courses = () => {
   return (
     <>
       {/* Header */}
-      <AppBar position="sticky" sx={{ bgcolor: "#9275B3" }}>
+      <AppBar position="Fixed" sx={{ bgcolor: "#9275B3" }}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography variant="h6" sx={{ color: "#fff" }}>
             Courses
@@ -125,10 +124,7 @@ const Courses = () => {
         open={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
       >
-        <Box
-          sx={{ width: 280, p: 2 }}
-          role="presentation"
-        >
+        <Box sx={{ width: 280, p: 2 }} role="presentation">
           <Box
             sx={{
               display: "flex",
@@ -145,15 +141,7 @@ const Courses = () => {
 
           {Object.entries(filters).map(([key, values]) => (
             <Box key={key} sx={{ mb: 3 }}>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: "bold",
-                  mb: 1,
-                  transition: "color 0.3s, transform 0.3s",
-                  "&:hover": { color: "#02d1FF", transform: "scale(1.05)" },
-                }}
-              >
+              <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
                 {key.charAt(0).toUpperCase() + key.slice(1)}
               </Typography>
               <FormGroup>
@@ -178,7 +166,7 @@ const Courses = () => {
 
       {/* Layout */}
       <Box sx={{ display: "flex", flexDirection: isMobile ? "column" : "row" }}>
-        {/* Sidebar Filt */}
+        {/* Sidebar Filters */}
         {!isMobile && (
           <Box
             sx={{
@@ -191,18 +179,10 @@ const Courses = () => {
           >
             {Object.entries(filters).map(([key, values]) => (
               <Box key={key} sx={{ mb: 3 }}>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: "bold",
-                    mb: 1,
-                    transition: "color 0.3s, transform 0.3s",
-                    "&:hover": { color: "#02d1FF", transform: "scale(1.05)" },
-                  }}
-                >
+                <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
                   {key.charAt(0).toUpperCase() + key.slice(1)}
                 </Typography>
-                <FormGroup sx={{fontSize:15}}>
+                <FormGroup sx={{ fontSize: 15 }}>
                   {values.map((value) => (
                     <FormControlLabel
                       key={value}
@@ -231,33 +211,56 @@ const Courses = () => {
             ml: isMobile ? 0 : isTablet ? "10px" : "30px",
           }}
         >
-          <Grid
-            container
-            spacing={isMobile ? 2 : isTablet ? 3 :8}
-            justifyContent="start"
-          >
-            {getFilteredCourses().map((course) => (
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                md={4}
-                lg={3}
-                key={course.course_id}
-              >
-                <CoursesCard
-                  course={course}
+          {isMobile ? (
+            <Box
+              sx={{
+                display: "flex",
+                overflowX: "auto",
+                gap:1,
+                pb: 2,
+                justifyContent:"start",
+                '&::-webkit-scrollbar': {
+                  height: 6,
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: '#ccc',
+                  borderRadius: 2,
+                },
+              }}
+            >
+              {getFilteredCourses().map((course) => (
+                <Box
+                  key={course.course_id}
+                  sx={{ minWidth: 250, flexShrink: 0 }}
                   onClick={() =>
                     navigate(`/courses/course-details/${course.course_id}`, {
                       state: { course },
                     })
                   }
-                />
-              </Grid>
-            ))}
-          </Grid>
+                >
+                  <CoursesCard course={course} />
+                </Box>
+              ))}
+            </Box>
+          ) : (
+            <Grid container spacing={isTablet ? 3 : 8} justifyContent="start">
+              {getFilteredCourses().map((course) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={course.course_id}>
+                  <CoursesCard
+                    course={course}
+                    onClick={() =>
+                      navigate(`/courses/course-details/${course.course_id}`, {
+                        state: { course },
+                      })
+                    }
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          )}
         </Box>
       </Box>
+      <Footer/>
     </>
   );
 };

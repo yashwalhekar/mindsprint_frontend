@@ -57,7 +57,16 @@ const VideoPlayer = ({ video_url = "", title = "course" }) => {
     loadResources();
   }, [video_url]);
 
+  // Optimize face detection with debouncing
+  let lastDetectTime = 0;
   const detect = async () => {
+    const now = Date.now();
+    if (now - lastDetectTime < 100) { // Adjust the time interval as needed
+      animationRef.current = requestAnimationFrame(detect);
+      return;
+    }
+    lastDetectTime = now;
+
     if (!detector || !webcamRef.current || webcamRef.current.readyState !== 4) {
       animationRef.current = requestAnimationFrame(detect);
       return;
@@ -80,6 +89,7 @@ const VideoPlayer = ({ video_url = "", title = "course" }) => {
 
     animationRef.current = requestAnimationFrame(detect);
   };
+
   // Webcam & Detection Logic
   useEffect(() => {
     let detectTimeout;
@@ -103,8 +113,6 @@ const VideoPlayer = ({ video_url = "", title = "course" }) => {
         webcamRef.current.srcObject = null;
       }
     };
-
-   
 
     if (isOnVideoPage) {
       startWebcam();

@@ -36,7 +36,13 @@ const HomePage = () => {
         <Typography
           variant="h6"
           fontSize={20}
-          sx={{ textAlign: "center",bgcolor:"#9275B3",color:"white",p:1,borderRadius:2}}
+          sx={{
+            textAlign: "center",
+            bgcolor: "#9275B3",
+            color: "white",
+            p: 1,
+            borderRadius: 2,
+          }}
           fontWeight={"semi-bold"}
           fontFamily={"jomolhari"}
         >
@@ -45,18 +51,30 @@ const HomePage = () => {
         </Typography>
       </Box>
 
-      <Box mt={4} p={2} sx={{backgroundImage:"linear-gradient(to right,rgb(217, 238, 238), #AFE5E5)",borderTopLeftRadius:"26px",borderTopRightRadius:"26px",} }>
+      <Box
+        mt={4}
+        p={3}
+        ml={2}
+        sx={{
+          backgroundImage:
+            "linear-gradient(to bottom,rgb(133, 222, 201), #AFE5E5)",
+          borderTopLeftRadius: "26px",
+          borderTopRightRadius: "26px",
+       
+        }}
+      >
         <Typography
           variant="h5"
           fontWeight="bold"
-          mb={4}
-          sx={{ display: "flex", justifyContent: "center",}}
+          mb={2}
+          sx={{ display: "flex", justifyContent: "center", opacity: "90%" }}
           fontFamily={"jomolhari"}
+          fontSize={25}
         >
           Invest in Your Growth
         </Typography>
 
-        <Grid container spacing={4}>
+        <Grid container spacing={2}>
           {dummyData.map((data, index) => (
             <Grid
               item
@@ -70,13 +88,13 @@ const HomePage = () => {
               }}
             >
               {/* Use the icon from the data */}
-              <div style={{ fontSize: "60px", marginBottom: "10px" }}>
+              <div style={{ fontSize: "60px", marginBottom: "8px" }}>
                 {data.icon}
               </div>
-              {/* Use the heading from the data */}
+              
               <Typography
                 variant="h6"
-                fontSize={20}
+                fontSize={22}
                 fontWeight="bold"
                 sx={{ textAlign: "center", marginBottom: "8px" }}
                 fontFamily={"jomolhari"}
@@ -99,10 +117,15 @@ const HomePage = () => {
       <Box mt={3} p={2}>
         <Box
           display="flex"
-          flexDirection={{ xs: "column", md: "row" }} 
-          justifyContent="space-between"
+          flexDirection={{ xs: "column", md: "row" }}
+          // justifyContent="space-between"
           alignItems="center"
-          sx={{  backgroundImage:"linear-gradient(to bottom,rgb(217, 243, 243), #AFE5E5)",borderTopLeftRadius:"26px",borderTopRightRadius:"26px"}}
+          sx={{
+            backgroundImage:
+              "linear-gradient(to bottom,rgb(133, 222, 201), #AFE5E5)",
+            borderTopLeftRadius: "26px",
+            borderTopRightRadius: "26px",
+          }}
           width={"100%"}
         >
           <Box
@@ -117,9 +140,11 @@ const HomePage = () => {
               variant="h6"
               sx={{
                 ml: 4,
-                fontSize: 20,
+                fontSize: 25,
                 fontWeight: "bold",
-                fontFamily:"jomolhari"
+                fontFamily: "jomolhari",
+
+                opacity: "90%",
               }}
               textAlign="center"
             >
@@ -128,7 +153,15 @@ const HomePage = () => {
             </Typography>
 
             <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
-              <Button variant="outlined" color="primary">
+              <Button
+                variant="outlined"
+                color="primary"
+                sx={{
+                  fontFamily: "jomolhari",
+                  fontWeight: "bold",
+                  fontSize: 18,
+                }}
+              >
                 Get Your First Course
               </Button>
             </Box>
@@ -137,11 +170,12 @@ const HomePage = () => {
           <Box
             sx={{
               display: "flex",
-              justifyContent: { xs: "center", md: "flex-center" },
+              justifyContent: { xs: "center", md: "right" },
               alignItems: "center",
               width: { xs: "100%", md: "45%" },
               mt: { xs: 2, md: 0 },
-              p:3
+              p: 3,
+              perspective: "1000px", // enables 3D perspective
             }}
           >
             <img
@@ -149,10 +183,12 @@ const HomePage = () => {
               alt="image 4"
               style={{
                 width: "100%",
-                maxWidth: "250px", // Restrict max width for smaller screens
-                height: "auto", // Maintain aspect ratio
+                maxWidth: "250px",
+                height: "auto",
                 borderRadius: "8px",
-                boxShadow: "0px 4px 10px gray", // Updated shadow style
+                boxShadow: "0px 4px 10px gray",
+                transform: "rotateY(-11deg) rotateX(8deg)", // adds 3D rotation
+                transition: "transform 0.5s ease",
               }}
             />
           </Box>

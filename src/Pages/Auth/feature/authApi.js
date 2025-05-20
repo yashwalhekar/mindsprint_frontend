@@ -29,8 +29,18 @@ export const authApi = createApi({
         method:"GET",
         body:id
       })
+    }),
+
+    logoutApi:builder.mutation({
+      query:(token)=>({
+        url:`/logout`,
+        method:"POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
     })
   }),
 });
 
-export const { useRegisterUserMutation, useLoginUserMutation,useGetProfileMutation } = authApi;
+export const { useRegisterUserMutation, useLoginUserMutation,useGetProfileMutation ,useLogoutApiMutation} = authApi;

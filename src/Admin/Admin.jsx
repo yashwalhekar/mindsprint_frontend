@@ -29,6 +29,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import MenuIcon from "@mui/icons-material/Menu"; // Hamburger icon
 import logo from "../Assets/images/MindSprintLogo.jpg";
+import { useLogoutApiMutation } from "../Pages/Auth/feature/authApi";
 
 const drawerWidth = 240;
 
@@ -41,19 +42,20 @@ const Admin = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
-  // State for expanding "All Users"
+
   const [openUsers, setOpenUsers] = useState(false);
   const handleToggleUsers = () => {
     setOpenUsers(!openUsers);
   };
 
-  // State for mobile drawer open/close
+  const [logoutUser] = useLogoutApiMutation()
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  // Avatar Menu State
+
   const [avatarAnchorEl, setAvatarAnchorEl] = useState(null);
   const handleAvatarClick = (event) => {
     setAvatarAnchorEl(event.currentTarget);
@@ -62,12 +64,20 @@ const Admin = () => {
     setAvatarAnchorEl(null);
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/");
+ const handleLogout = async () => {
+    const token = localStorage.getItem("token"); 
+  
+    try {
+      const response = await logoutUser(token).unwrap();
+      dispatch(logout())
+      console.log("Logout success:", response);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+    navigate("/")
   };
 
-  // Drawer Content
+
   const drawerContent = (
     <Box sx={{ overflow: "auto" }}>
       <List>
@@ -98,6 +108,11 @@ const Admin = () => {
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
+              <ListItemButton component={Link} to="/admin/users/enrolledUsers" onClick={() => isMobile && handleDrawerToggle()}>
+                <ListItemText primary="Enrolled Users" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
               <ListItemButton component={Link} to="/admin/users/add" onClick={() => isMobile && handleDrawerToggle()}>
                 <ListItemText primary="Add User" />
               </ListItemButton>
@@ -120,6 +135,15 @@ const Admin = () => {
               <AddBoxIcon />
             </ListItemIcon>
             <ListItemText primary="Create Course" />
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/admin/testQuestions" onClick={() => isMobile && handleDrawerToggle()}>
+            <ListItemIcon>
+              <AddBoxIcon />
+            </ListItemIcon>
+            <ListItemText primary="Add Test" />
           </ListItemButton>
         </ListItem>
       </List>
@@ -218,7 +242,7 @@ const Admin = () => {
             },
           }}
         >
-          <Toolbar /> {/* This ensures content starts below the AppBar */}
+          <Toolbar /> 
           {drawerContent}
         </Drawer>
       )}

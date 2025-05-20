@@ -24,10 +24,15 @@ export const enrollmentApi = createApi({
         console.log("🧠 transformResponse:", response); // ← Add this to test
         return response.data;
       },
-      
       providesTags: ["Enrollment"],
     }),
+    getEnrolledCourseByUsersApi:builder.query({
+      query:()=>({
+         url:"/enrolledCoursesbyusers",
+         method:"GET"
+      }),
+    })
   }),
 });
 
-export const { useEnrollUserMutation ,useGetEnrollmentInfoApiQuery} = enrollmentApi;
+export const { useEnrollUserMutation ,useGetEnrollmentInfoApiQuery,useGetEnrolledCourseByUsersApiQuery} = enrollmentApi;

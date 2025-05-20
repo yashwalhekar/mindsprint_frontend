@@ -12,7 +12,7 @@ const adminApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["AdminUsers", "Courses", "Modules", "Lessons","Notes"],
+  tagTypes: ["AdminUsers", "Courses", "Modules", "Lessons", "Notes"],
   endpoints: (builder) => ({
     getAllUsers: builder.query({
       query: () => ({
@@ -83,12 +83,12 @@ const adminApi = createApi({
 
     updateCourseStatusApi: builder.mutation({
       query: ({ course_id, status }) => {
-        console.log("API Call - ID:", course_id, "Status:", status);  // Debugging log
-    
+        console.log("API Call - ID:", course_id, "Status:", status); // Debugging log
+
         return {
           url: `/update-course`,
           method: "PATCH",
-          body: { course_id, status },  // Ensure these values are not undefined
+          body: { course_id, status }, // Ensure these values are not undefined
         };
       },
       invalidatesTags: ["Courses"],
@@ -163,30 +163,35 @@ const adminApi = createApi({
       invalidatesTags: ["Lessons"],
     }),
 
-
     //------------------------NOTES----------------------------------------------
 
-    createNotesApi:builder.mutation({
-      query:({course_id,module_id,lesson_id,notes})=>({
-        url:`/course/${course_id}/module/${module_id}/lecture/${lesson_id}/notes`,
-        method:"POST",
-        body:notes
+    createNotesApi: builder.mutation({
+      query: ({ course_id, module_id, lesson_id, notes }) => ({
+        url: `/course/${course_id}/module/${module_id}/lecture/${lesson_id}/notes`,
+        method: "POST",
+        body: notes,
       }),
-      invalidatesTags:["Notes"]
+      invalidatesTags: ["Notes"],
     }),
 
-    getAdminNotesAdmin:builder.query({
-      query:({course_id,module_id,lesson_id})=>({
-        url:`/course/${course_id}/module/${module_id}/lecture/${lesson_id}/view_notes`,
-        method:"GET",
+    getAdminNotesAdmin: builder.query({
+      query: ({ course_id, module_id, lesson_id }) => ({
+        url: `/course/${course_id}/module/${module_id}/lecture/${lesson_id}/view_notes`,
+        method: "GET",
       }),
-      providesTags:["Notes"]
-    })
+      providesTags: ["Notes"],
+    }),
+    // ---------------------Questions-------------------------------------------------------
+
+    addNewQuestionApi: builder.mutation({
+      query:(questions)=>({
+        url:"/create",
+        method:"POST",
+        body:questions
+      }),
+    }),
   }),
 });
-
-
-
 
 export const {
   useGetAllUsersQuery,
@@ -207,7 +212,8 @@ export const {
   useAddLessonApiMutation,
   useRemoveLessonApiMutation,
   useCreateNotesApiMutation,
-  useGetAdminNotesAdminQuery
+  useGetAdminNotesAdminQuery,
+  useAddNewQuestionApiMutation
 } = adminApi;
 
 export default adminApi;

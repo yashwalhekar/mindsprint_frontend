@@ -14,11 +14,11 @@ import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../Assets/images/MindSprintLogo.jpg";
-import { Avatar, Menu, MenuItem, Typography } from "@mui/material";
+import { Avatar, Menu, MenuItem, Stack, Typography } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../Pages/Auth/feature/authSlice";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { useLogoutApiMutation } from "../../Pages/Auth/feature/authApi";
 
 const Navbar = () => {
   const theme = useTheme();
@@ -31,12 +31,13 @@ const Navbar = () => {
   const [avtarAnchorEl, setAvatarAnchorEl] = useState(null);
   const openExplore = Boolean(explorAnchorEl);
   const openAvtar = Boolean(avtarAnchorEl);
+  const navigate = useNavigate();
 
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
+  const [logoutUser] = useLogoutApiMutation();
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -53,17 +54,26 @@ const Navbar = () => {
     { text: "Cart", link: "/cart" },
   ];
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await logoutUser(token).unwrap();
+      dispatch(logout());
+      navigate("/");
+      console.log("Logout success:", response);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
-  const handleExploreClick = (event) => {
-    setExploreAnchorEl(event.currentTarget);
-  };
+  // const handleExploreClick = (event) => {
+  //   setExploreAnchorEl(event.currentTarget);
+  // };
 
-  const handleExploreClose = () => {
-    setExploreAnchorEl(null);
-  };
+  // const handleExploreClose = () => {
+  //   setExploreAnchorEl(null);
+  // };
 
   const handleAvtarClick = (event) => {
     setAvatarAnchorEl(event.currentTarget);
@@ -82,8 +92,7 @@ const Navbar = () => {
         position="fixed"
         sx={{
           backgroundColor: "white",
-          boxShadow: 1,
-          borderBottom: "linear-gradient(to right, rgb(105,241,243), rgb(81,209,109))",
+          boxShadow: 2,
         }}
       >
         <Toolbar
@@ -128,10 +137,38 @@ const Navbar = () => {
                       }}
                     />
                   </Box>
+
+                  {isAuthenticated ? (
+                    <>
+                      <IconButton onClick={handleAvtarClick}>
+                        <Avatar
+                     
+                          sx={{ bgcolor: "#8c3be3", fontSize: 9,width:30,height:30 }}
+                        >
+                          {user?.first_name[0].toUpperCase()}
+                          {user?.last_name
+                            ? user.last_name[0].toUpperCase()
+                            : ""}
+                        </Avatar>
+                      </IconButton>
+                      <Menu
+                        anchorEl={avtarAnchorEl}
+                        open={openAvtar}
+                        onClose={handleAvtarClose}
+                      >
+                        <MenuItem onClick={() => navigate("/userProfile")}>
+                          Profile
+                        </MenuItem>
+                        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                      </Menu>
+                    </>
+                  ) : (
+                    <> </>
+                  )}
                 </>
               ) : (
                 <>
-                  <Box display="flex" alignItems="center" gap={3}>
+                  <Box display="flex" alignItems="end" gap={3}>
                     <Box
                       component={Link}
                       to="/"
@@ -146,30 +183,6 @@ const Navbar = () => {
                         }}
                       />
                     </Box>
-
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      size="small"
-                      sx={{ fontSize: 10 }}
-                      onClick={handleExploreClick}
-                    >
-                      Explore <ArrowDropDownIcon />
-                    </Button>
-
-                    <Menu
-                      anchorEl={explorAnchorEl}
-                      open={openExplore}
-                      onClose={handleExploreClose}
-                      MenuListProps={{ "aria-labelledby": "basic-button" }}
-                    >
-                      <MenuItem
-                        onClick={() => navigate("/courses")}
-                        sx={{ fontSize: 12 }}
-                      >
-                        Courses
-                      </MenuItem>
-                    </Menu>
                   </Box>
 
                   <Box
@@ -184,28 +197,76 @@ const Navbar = () => {
                         variant="body1"
                         sx={{
                           color: "black",
-                          "&:hover": { color: "gray" },
-                          fontWeight: "medium",
-                          fontSize: 12,
+                          // fontWeight: "bold",
+                          fontFamily: "jomolhari",
+                          fontSize: 18,
+                          position: "relative",
+                          display: "inline-block",
+                          "&::after": {
+                            content: '""',
+                            position: "absolute",
+                            width: "0%",
+                            height: "3px",
+                            left: 0,
+                            bottom: 0,
+                            backgroundImage:
+                              "linear-gradient(to right, rgb(105,241,243), rgb(81,209,109))",
+                            transition: "width 0.3s ease",
+                          },
+                          "&:hover::after": {
+                            width: "100%",
+                          },
                         }}
                       >
                         Courses
                       </Typography>
                     </Link>
-                    <Link to={"/cart"} style={{ textDecoration: "none" }}>
-                      <ShoppingCartIcon
+
+                    {/* Cart Link */}
+                    <Link to="/cart" style={{ textDecoration: "none" }}>
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        spacing={1}
                         sx={{
-                          color: "#3D3D3E",
-                          "& : hover": { color: "black" },
+                          position: "relative",
+                          width: "fit-content",
+                          "&::after": {
+                            content: '""',
+                            position: "absolute",
+                            width: "0%",
+                            height: "3px",
+                            left: 0,
+                            bottom: -2,
+                            backgroundImage:
+                              "linear-gradient(to right, rgb(105,241,243), rgb(81,209,109))",
+                            transition: "width 0.3s ease",
+                          },
+                          "&:hover::after": {
+                            width: "100%",
+                          },
                         }}
-                      />
+                      >
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            color: "black",
+                            fontSize: 18,
+                            // fontWeight: "bold",
+                            fontFamily: "jomolhari",
+                          }}
+                        >
+                          Cart
+                        </Typography>
+                        <ShoppingCartIcon sx={{ color: "black" }} />
+                      </Stack>
                     </Link>
                     {isAuthenticated ? (
                       <>
                         <IconButton onClick={handleAvtarClick}>
                           <Avatar
                             sizes="small"
-                            sx={{ bgcolor: "#4281FF", fontSize: 10 }}
+                            sx={{ bgcolor: "#8c3be3", fontSize: 10 }}
                           >
                             {user?.first_name[0].toUpperCase()}
                             {user?.last_name
@@ -218,10 +279,10 @@ const Navbar = () => {
                           open={openAvtar}
                           onClose={handleAvtarClose}
                         >
-                          <MenuItem>Profile</MenuItem>
-                          <MenuItem onClick={handleLogout} navigate={"/"}>
-                            Logout
+                          <MenuItem onClick={() => navigate("/userProfile")}>
+                            Profile
                           </MenuItem>
+                          <MenuItem onClick={handleLogout}>Logout</MenuItem>
                         </Menu>
                       </>
                     ) : (
@@ -242,11 +303,13 @@ const Navbar = () => {
           )}
         </Toolbar>
       </AppBar>
+
       <Toolbar />
       <Divider
         sx={{
           height: "2px",
-          background: "linear-gradient(to right, rgb(105,241,243), rgb(81,209,109))",
+          background:
+            "linear-gradient(to right, rgb(105,241,243), rgb(81,209,109))",
         }}
       />
 

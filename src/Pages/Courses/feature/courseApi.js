@@ -12,7 +12,7 @@ export const courseApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Customer", "Modules", "Lessons", "Notes"], // Moved this outside prepareHeaders
+  tagTypes: ["Customer", "Modules", "Lessons", "Notes","Quiz"], // Moved this outside prepareHeaders
   endpoints: (builder) => ({
     getCourse: builder.query({
       query: () => ({
@@ -53,7 +53,32 @@ export const courseApi = createApi({
         method:"GET"
       }),
       providesTags:["Notes"]
-    })
+    }),
+
+    getQuizApi:builder.query({
+      query:({course_id,module_id,lesson_id})=>({
+        url:`/${course_id}/${module_id}/${lesson_id}`,
+        method:"GET"
+      }),
+      providesTags:["Quiz"]
+    }),
+
+    submitAnswersApi: builder.mutation({
+  query: ({ userId, quizId, answers }) => ({
+    url: `/submit`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: {
+      userId,
+      quizId,
+      answers,
+    },
+  }),
+  invalidatesTags: ["Quiz"],
+})
+
   }),
 });
 
@@ -62,6 +87,8 @@ export const {
   useGetModulesQuery, 
   useGetLessonsQuery, 
   useAddUserNotesApiMutation, // Added missing mutation export
-  useGetUserNotesApiQuery
+  useGetUserNotesApiQuery,
+  useGetQuizApiQuery,
+  useSubmitAnswersApiMutation
 
 } = courseApi;
